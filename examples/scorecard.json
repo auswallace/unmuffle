@@ -1,0 +1,219 @@
+[
+  {
+    "scenario": "pocket",
+    "baseline": {
+      "wer": 0.478,
+      "sam_words_found_before_pocket": 0.976,
+      "sam_words_found_in_pocket": 0.118,
+      "alex_words_found_in_pocket": 0.694
+    },
+    "unmuffle": {
+      "wer": 0.198,
+      "sam_words_found_before_pocket": 0.976,
+      "sam_words_found_in_pocket": 0.809,
+      "alex_words_found_in_pocket": 0.612
+    },
+    "speakers": 0.929,
+    "si_sdr_db": {
+      "raw": -9.38,
+      "cleaned": -3.88
+    },
+    "dnsmos": {
+      "raw": 1.773,
+      "cleaned": 3.013
+    },
+    "judge": {
+      "turns": 10,
+      "agreement": 1.0,
+      "median_db_given_up": 0.0
+    },
+    "methods_used": {
+      "raw": 5,
+      "gtcrn": 0,
+      "dpdfnet": 5,
+      "cancel": 5
+    },
+    "voice_match": {
+      "N0": {
+        "to": "C0",
+        "similarity": 0.593,
+        "margin": 0.391
+      },
+      "N1": {
+        "to": "C1",
+        "similarity": 0.337,
+        "margin": 0.13
+      }
+    }
+  },
+  {
+    "scenario": "cafe",
+    "baseline": {
+      "wer": 0.308,
+      "alex_words_found": 0.569,
+      "sam_words_found": 0.855
+    },
+    "unmuffle": {
+      "wer": 0.5,
+      "alex_words_found": 0.736,
+      "sam_words_found": 0.9
+    },
+    "speakers": 0.929,
+    "si_sdr_db": {
+      "raw": 2.37,
+      "cleaned": 3.03
+    },
+    "dnsmos": {
+      "raw": 2.157,
+      "cleaned": 3.012
+    },
+    "judge": {
+      "turns": 17,
+      "agreement": 0.882,
+      "median_db_given_up": 0.0
+    },
+    "methods_used": {
+      "raw": 0,
+      "gtcrn": 0,
+      "dpdfnet": 17,
+      "cancel": 1
+    },
+    "voice_match": null
+  },
+  {
+    "scenario": "wind",
+    "baseline": {
+      "wer": 0.055,
+      "alex_words_found": 0.917,
+      "sam_words_found": 0.982
+    },
+    "unmuffle": {
+      "wer": 0.071,
+      "alex_words_found": 0.875,
+      "sam_words_found": 0.973
+    },
+    "speakers": 1.0,
+    "si_sdr_db": {
+      "raw": -0.69,
+      "cleaned": 9.69
+    },
+    "dnsmos": {
+      "raw": 2.581,
+      "cleaned": 3.436
+    },
+    "judge": {
+      "turns": 15,
+      "agreement": 0.933,
+      "median_db_given_up": 0.0
+    },
+    "methods_used": {
+      "raw": 0,
+      "gtcrn": 0,
+      "dpdfnet": 15,
+      "cancel": 0
+    },
+    "voice_match": null
+  },
+  {
+    "scenario": "hum",
+    "baseline": {
+      "wer": 0.115,
+      "alex_words_found": 0.847,
+      "sam_words_found": 0.964
+    },
+    "unmuffle": {
+      "wer": 0.143,
+      "alex_words_found": 0.792,
+      "sam_words_found": 0.936
+    },
+    "speakers": 0.857,
+    "si_sdr_db": {
+      "raw": 1.5,
+      "cleaned": 7.75
+    },
+    "dnsmos": {
+      "raw": 1.722,
+      "cleaned": 3.2
+    },
+    "judge": {
+      "turns": 15,
+      "agreement": 1.0,
+      "median_db_given_up": 0.0
+    },
+    "methods_used": {
+      "raw": 0,
+      "gtcrn": 0,
+      "dpdfnet": 15,
+      "cancel": 0
+    },
+    "voice_match": null
+  },
+  {
+    "scenario": "traffic",
+    "baseline": {
+      "wer": 0.055,
+      "alex_words_found": 0.944,
+      "sam_words_found": 0.964
+    },
+    "unmuffle": {
+      "wer": 0.088,
+      "alex_words_found": 0.847,
+      "sam_words_found": 0.973
+    },
+    "speakers": 1.0,
+    "si_sdr_db": {
+      "raw": -1.27,
+      "cleaned": 6.07
+    },
+    "dnsmos": {
+      "raw": 2.687,
+      "cleaned": 3.409
+    },
+    "judge": {
+      "turns": 15,
+      "agreement": 0.8,
+      "median_db_given_up": 0.0
+    },
+    "methods_used": {
+      "raw": 1,
+      "gtcrn": 0,
+      "dpdfnet": 13,
+      "cancel": 1
+    },
+    "voice_match": null
+  },
+  {
+    "scenario": "music",
+    "baseline": {
+      "wer": 0.022,
+      "alex_words_found": 0.972,
+      "sam_words_found": 0.991
+    },
+    "unmuffle": {
+      "wer": 0.077,
+      "alex_words_found": 0.847,
+      "sam_words_found": 0.973
+    },
+    "speakers": 1.0,
+    "si_sdr_db": {
+      "raw": 1.61,
+      "cleaned": 8.8
+    },
+    "dnsmos": {
+      "raw": 1.828,
+      "cleaned": 3.358
+    },
+    "judge": {
+      "turns": 15,
+      "agreement": 1.0,
+      "median_db_given_up": 0.0
+    },
+    "methods_used": {
+      "raw": 0,
+      "gtcrn": 0,
+      "dpdfnet": 15,
+      "cancel": 0
+    },
+    "voice_match": null
+  }
+]

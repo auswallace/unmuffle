@@ -1,0 +1,19 @@
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.venv/
+*.unmuffle/
+
+# never commit recordings or model weights
+*.wav
+*.mov
+*.mp4
+*.m4a
+*.mp3
+*.onnx
+*.tar.bz2
+
+# the demo clip is synthetic and small; keep it
+!examples/demo.m4a
+.ruff_cache/
+!docs/audio/*.mp3

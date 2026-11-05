@@ -1,0 +1,51 @@
+{
+  "source": "demo.m4a",
+  "duration_s": 63.22,
+  "loudness_jump": {
+    "at_seconds": 20.5,
+    "rise_db": 46.4
+  },
+  "channels": {
+    "correlation": 0.9542,
+    "identical": false
+  },
+  "clean_seconds": 18.3,
+  "regions": [
+    {
+      "start": 0.0,
+      "end": 18.3,
+      "clean": true
+    },
+    {
+      "start": 18.3,
+      "end": 63.2,
+      "clean": false
+    }
+  ],
+  "speakers_found": {
+    "clean_part": 2,
+    "noisy_part": 2
+  },
+  "voice_match": {
+    "N0": {
+      "to": "C0",
+      "similarity": 0.593,
+      "margin": 0.391
+    },
+    "N1": {
+      "to": "C1",
+      "similarity": 0.337,
+      "margin": 0.13
+    }
+  },
+  "dropped_fragments": [],
+  "lines": 15,
+  "low_confidence_lines": 1,
+  "elapsed_s": 7.2,
+  "methods_used": {
+    "raw": 5,
+    "gtcrn": 0,
+    "dpdfnet": 5,
+    "cancel": 5
+  }
+}

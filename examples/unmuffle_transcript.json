@@ -1,0 +1,257 @@
+[
+  {
+    "start": 0.0,
+    "end": 3.844718813896179,
+    "text": "Hey Alex, do you have a minute to talk about the market booth?",
+    "track": "raw",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "source": "raw",
+      "span": [
+        0.0,
+        3.844718813896179
+      ]
+    }
+  },
+  {
+    "start": 3.844718813896179,
+    "end": 6.3675315380096436,
+    "text": "What's going on with that?",
+    "track": "raw",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 0.8,
+    "alt": "",
+    "meta": {
+      "source": "raw",
+      "span": [
+        3.844718813896179,
+        6.3675315380096436
+      ]
+    }
+  },
+  {
+    "start": 6.3675315380096436,
+    "end": 10.712843894958496,
+    "text": "The city moved us from a corner spot to the back row by the parking lot.",
+    "track": "raw",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "source": "raw",
+      "span": [
+        6.3675315380096436,
+        10.712843894958496
+      ]
+    }
+  },
+  {
+    "start": 10.712843894958496,
+    "end": 13.682844161987305,
+    "text": "Since when? Nobody told me about that.",
+    "track": "raw",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "source": "raw",
+      "span": [
+        10.712843894958496,
+        13.682844161987305
+      ]
+    }
+  },
+  {
+    "start": 13.682844161987305,
+    "end": 18.3,
+    "text": "The email came on Tuesday. I think it only went to the board.",
+    "track": "raw",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "source": "raw",
+      "span": [
+        13.682844161987305,
+        18.3
+      ]
+    }
+  },
+  {
+    "start": 18.3,
+    "end": 21.86721897125244,
+    "text": "So what do you want to do about it?",
+    "track": "dpdfnet",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "span": [
+        18.3,
+        21.86721897125244
+      ],
+      "source": "dpdfnet"
+    }
+  },
+  {
+    "start": 21.86721897125244,
+    "end": 25.849720001220703,
+    "text": "I want to ask for the cornerback, because most of ourselves comes from people walking past.",
+    "track": "cancel",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 0.69,
+    "alt": "",
+    "meta": {
+      "span": [
+        21.86721897125244,
+        25.849720001220703
+      ],
+      "source": "cancel"
+    }
+  },
+  {
+    "start": 25.849720001220703,
+    "end": 30.633782386779785,
+    "text": "That makes sense. The appointment offers bonus at 4 on Friday.",
+    "track": "dpdfnet",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 0.73,
+    "alt": "",
+    "meta": {
+      "span": [
+        25.849720001220703,
+        30.633782386779785
+      ],
+      "source": "dpdfnet"
+    }
+  },
+  {
+    "start": 30.633782386779785,
+    "end": 34.4981575012207,
+    "text": "then i can call them to-morrow morning before my shift starts",
+    "track": "cancel",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "span": [
+        30.633782386779785,
+        34.4981575012207
+      ],
+      "source": "cancel"
+    }
+  },
+  {
+    "start": 34.4981575012207,
+    "end": 38.27815628051758,
+    "text": "Gats them about the tower outlet too. The freezer needs one.",
+    "track": "dpdfnet",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 0.45,
+    "alt": "Gas that'll blow the power out but two, the freezer needs one.",
+    "meta": {
+      "span": [
+        34.4981575012207,
+        38.27815628051758
+      ],
+      "source": "dpdfnet"
+    }
+  },
+  {
+    "start": 38.27815628051758,
+    "end": 43.61065864562988,
+    "text": "Good point. The ice cream sold out by noon last time because the freezer kept sipping.",
+    "track": "cancel",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 0.81,
+    "alt": "",
+    "meta": {
+      "span": [
+        38.27815628051758,
+        43.61065864562988
+      ],
+      "source": "cancel"
+    }
+  },
+  {
+    "start": 43.61065864562988,
+    "end": 49.300000000000004,
+    "text": "They say no, we could share the corner with the victory.",
+    "track": "dpdfnet",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 1.0,
+    "alt": "",
+    "meta": {
+      "span": [
+        43.61065864562988,
+        49.300000000000004
+      ],
+      "source": "dpdfnet"
+    }
+  },
+  {
+    "start": 49.300000000000004,
+    "end": 53.550000000000004,
+    "text": "Maria already told you she would split the space and it cost you that.",
+    "track": "cancel",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 0.67,
+    "alt": "",
+    "meta": {
+      "span": [
+        49.300000000000004,
+        53.550000000000004
+      ],
+      "source": "cancel"
+    }
+  },
+  {
+    "start": 53.550000000000004,
+    "end": 58.283470153808594,
+    "text": "doing a then meeting with ASA and I will take the schedule.",
+    "track": "dpdfnet",
+    "speaker": "Alex",
+    "speaker_sure": true,
+    "confidence": 0.75,
+    "alt": "",
+    "meta": {
+      "span": [
+        53.550000000000004,
+        58.283470153808594
+      ],
+      "source": "dpdfnet"
+    }
+  },
+  {
+    "start": 58.283470153808594,
+    "end": 63.224375,
+    "text": "Rude 2, thanks for starting this out with me.",
+    "track": "cancel",
+    "speaker": "Sam",
+    "speaker_sure": true,
+    "confidence": 0.89,
+    "alt": "",
+    "meta": {
+      "span": [
+        58.283470153808594,
+        63.224375
+      ],
+      "source": "cancel"
+    }
+  }
+]

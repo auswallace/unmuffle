@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>unmuffle demo</title>
+<meta name="description" content="Listen to a covered-mic recording before and after unmuffle, with the transcript it produced.">
+<style>
+:root{--bg:#f3f4f6;--panel:#fbfbfc;--fg:#1b2330;--muted:#5b6574;--line:#d7dce3;--soft:#e7eaef;--signal:#b4660a;--signal-soft:#f7e8d3;--bad:#a83c2c;--s1:#b4660a;--s2:#2f6f9f;
+  --font:ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#111419;--panel:#181c23;--fg:#e7eaef;--muted:#9aa4b2;--line:#2a313c;--soft:#222832;--signal:#f0a43a;--signal-soft:#3a2b16;--bad:#e2735f;--s1:#f0a43a;--s2:#6fb0e0;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;overflow-x:clip}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--font);padding:32px max(16px,env(safe-area-inset-left)) 64px}
+.wrap{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1{font-size:clamp(28px,5vw,40px);margin:0;letter-spacing:-.01em;line-height:1.15}
+p{margin:0;max-width:65ch}
+.lede{font-size:18px;color:var(--muted)}
+a{color:var(--signal)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.player{position:sticky;top:0;z-index:2;background:var(--bg);padding:12px 0;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:inherit;color:inherit;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer}
+.seg button:hover{border-color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+audio{width:100%}
+.hint{font-size:13px;color:var(--muted)}
+.lines{display:flex;flex-direction:column}
+.ln{font:inherit;color:inherit;display:grid;grid-template-columns:52px 64px minmax(0,1fr);gap:12px;padding:8px 10px;border-radius:6px;cursor:pointer;border:0;background:none;text-align:left;width:100%}
+.ln:hover{background:var(--soft)}.ln.on{background:var(--signal-soft)}
+.ln time{font-family:var(--mono);font-size:13px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.who{font-weight:600;font-size:14px;padding-top:1px}
+.flag{color:var(--bad);font-weight:600;margin-left:4px}
+.alt{display:block;font-size:13px;color:var(--muted)}
+.pocket{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:6px 10px;color:var(--muted);font-size:14px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);margin:4px 0}
+.pocket time{font-family:var(--mono);font-size:13px}
+figure{margin:0;display:flex;flex-direction:column;gap:6px}
+figure img{max-width:100%;border-radius:6px;border:1px solid var(--line)}
+figcaption{font-size:13px;color:var(--muted)}
+table{border-collapse:collapse;font-size:15px;width:100%}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--muted)}
+td.n{font-variant-numeric:tabular-nums}
+@media (max-width:600px){.ln{grid-template-columns:44px minmax(0,1fr)}.ln .t,.ln .who{grid-column:2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:12px">
+    <h1>Hear the phone go into a pocket</h1>
+    <p class="lede">A 63-second synthetic conversation between Sam and Alex. At 0:20 the phone goes into Sam's pocket: a rumble covers both mics and Sam turns muffled. Switch between the original and what <a href="https://github.com/auswallace/unmuffle">unmuffle</a> made of it, at the same moment.</p>
+  </header>
+
+  <div class="player">
+    <div class="seg" role="group" aria-label="Which audio to play">
+      <button data-src="audio/demo_original.mp3" aria-pressed="false">Original</button>
+      <button data-src="audio/demo_cleaned.mp3" aria-pressed="true">Cleaned</button>
+      <button data-src="audio/demo_sam.mp3" aria-pressed="false">Sam only</button>
+      <button data-src="audio/demo_alex.mp3" aria-pressed="false">Alex only</button>
+    </div>
+    <audio id="au" controls preload="metadata" src="audio/demo_cleaned.mp3"></audio>
+    <p class="hint">Tip: jump to 0:21, play Original, then switch to Cleaned. Click any line below to hear it.</p>
+  </div>
+
+  <table>
+    <thead><tr><th></th><th>Plain Whisper</th><th>unmuffle</th></tr></thead>
+    <tbody>
+      <tr><td>Word error rate</td><td class="n">0.48</td><td class="n"><b>0.20</b></td></tr>
+      <tr><td>Sam's words found in the pocket</td><td class="n">12%</td><td class="n"><b>81%</b></td></tr>
+      <tr><td>Speaker labels</td><td>none</td><td>93% right</td></tr>
+    </tbody>
+  </table>
+
+  <section style="display:flex;flex-direction:column;gap:6px">
+    <div class="lines" id="lines"></div>
+  </section>
+
+  <figure>
+    <img src="img/spectrogram_before.png" alt="Spectrogram of the original: clean speech until 0:20, then a wall of low rumble">
+    <figcaption>Original. After 0:20 the rumble fills everything below about 1 kHz.</figcaption>
+  </figure>
+  <figure>
+    <img src="img/spectrogram_after_cleaned.png" alt="Spectrogram of the cleaned audio: the rumble is gone and both voices show as clean harmonics">
+    <figcaption>Cleaned. The rumble is gone; both voices come back as clean harmonics.</figcaption>
+  </figure>
+
+  <p>How it was found, including the attempts that failed: <a href="case-study.html">The pocket recording</a>. Code, tests, and the full scorecard: <a href="https://github.com/auswallace/unmuffle">github.com/auswallace/unmuffle</a>.</p>
+</div>
+<script>
+const LINES = [{"start": 0.0, "end": 3.844718813896179, "text": "Hey Alex, do you have a minute to talk about the market booth?", "speaker": "Sam", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 3.844718813896179, "end": 6.3675315380096436, "text": "What's going on with that?", "speaker": "Alex", "speaker_sure": true, "confidence": 0.8, "alt": ""}, {"start": 6.3675315380096436, "end": 10.712843894958496, "text": "The city moved us from a corner spot to the back row by the parking lot.", "speaker": "Sam", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 10.712843894958496, "end": 13.682844161987305, "text": "Since when? Nobody told me about that.", "speaker": "Alex", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 13.682844161987305, "end": 18.3, "text": "The email came on Tuesday. I think it only went to the board.", "speaker": "Sam", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 18.3, "end": 21.86721897125244, "text": "So what do you want to do about it?", "speaker": "Alex", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 21.86721897125244, "end": 25.849720001220703, "text": "I want to ask for the cornerback, because most of ourselves comes from people walking past.", "speaker": "Sam", "speaker_sure": true, "confidence": 0.69, "alt": ""}, {"start": 25.849720001220703, "end": 30.633782386779785, "text": "That makes sense. The appointment offers bonus at 4 on Friday.", "speaker": "Alex", "speaker_sure": true, "confidence": 0.73, "alt": ""}, {"start": 30.633782386779785, "end": 34.4981575012207, "text": "then i can call them to-morrow morning before my shift starts", "speaker": "Sam", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 34.4981575012207, "end": 38.27815628051758, "text": "Gats them about the tower outlet too. The freezer needs one.", "speaker": "Alex", "speaker_sure": true, "confidence": 0.45, "alt": "Gas that'll blow the power out but two, the freezer needs one."}, {"start": 38.27815628051758, "end": 43.61065864562988, "text": "Good point. The ice cream sold out by noon last time because the freezer kept sipping.", "speaker": "Sam", "speaker_sure": true, "confidence": 0.81, "alt": ""}, {"start": 43.61065864562988, "end": 49.300000000000004, "text": "They say no, we could share the corner with the victory.", "speaker": "Alex", "speaker_sure": true, "confidence": 1.0, "alt": ""}, {"start": 49.300000000000004, "end": 53.550000000000004, "text": "Maria already told you she would split the space and it cost you that.", "speaker": "Alex", "speaker_sure": true, "confidence": 0.67, "alt": ""}, {"start": 53.550000000000004, "end": 58.283470153808594, "text": "doing a then meeting with ASA and I will take the schedule.", "speaker": "Alex", "speaker_sure": true, "confidence": 0.75, "alt": ""}, {"start": 58.283470153808594, "end": 63.224375, "text": "Rude 2, thanks for starting this out with me.", "speaker": "Sam", "speaker_sure": true, "confidence": 0.89, "alt": ""}];
+const POCKET = 20.0;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const stamp = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+const color = { Sam: "var(--s1)", Alex: "var(--s2)" };
+const box = document.getElementById("lines");
+let html = "", marked = false;
+LINES.forEach((l, i) => {
+  if (!marked && l.start >= POCKET - 1) { html += `<div class="pocket"><time>0:20</time><span>The phone goes into Sam's pocket.</span></div>`; marked = true; }
+  const flag = l.confidence !== null && l.confidence < 0.5;
+  html += `<button class="ln" data-i="${i}" data-t="${l.start}"><time>${stamp(l.start)}</time><span class="who" style="color:${color[l.speaker] || "inherit"}">${esc(l.speaker)}</span><span class="t">${esc(l.text)}${flag ? '<span class="flag" title="The two models disagree here">?</span>' : ""}${l.alt ? `<span class="alt">Second model heard: ${esc(l.alt)}</span>` : ""}</span></button>`;
+});
+box.innerHTML = html;
+const au = document.getElementById("au");
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => {
+  const t = au.currentTime, playing = !au.paused;
+  document.querySelectorAll(".seg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  au.src = b.dataset.src;
+  au.addEventListener("loadedmetadata", () => { au.currentTime = t; if (playing) au.play(); }, { once: true });
+}));
+const rows = [...box.querySelectorAll(".ln")];
+rows.forEach(r => r.addEventListener("click", () => { au.currentTime = parseFloat(r.dataset.t); au.play(); }));
+let last = -1;
+au.addEventListener("timeupdate", () => {
+  let k = -1;
+  LINES.forEach((l, i) => { if (l.start <= au.currentTime + 0.05) k = i; });
+  if (k !== last) { rows[last]?.classList.remove("on"); rows[k]?.classList.add("on"); last = k; }
+});
+</script>
+</body>
+</html>

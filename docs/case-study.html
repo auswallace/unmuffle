@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Pocket Recording</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="How a covered-mic phone recording was turned into a near-complete transcript, and the unmuffle tool that automates it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Hallmark · shape: Long Document (case study) · theme: custom (slate noise, amber signal) · job: read, then open the repo · signature: the two-mic diagram · audited against the Hallmark Floor */
+/* Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4 · weakest: P, a case study argues little; it argues that the stereo channels, not a bigger model, solved it */
+/* Hallmark · dismissed 58 · a Long Document case study read top to bottom; each section is one step of the recovery */
+/* Layout: one reading column, like a lab notebook. The two diagrams are the only wide elements. Amber = the voice we chase, slate = the noise. */
+:root{
+  --bg:#f4f5f7; --surface:#fcfcfd; --fg:#1b2330; --muted:#566273; --line:#d6dbe3;
+  --noise:#8592a5; --noise-soft:#e3e7ed; --signal:#b4660a; --signal-soft:#f8ead6; --on-signal:#fcfcfd;
+  --good:#2b7349; --bad:#a83c2c;
+  --font-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:40px; --space-7:72px;
+  --text-small:15px; --text-body:17px; --text-lede:20px; --text-section:clamp(26px,3.4vw,34px); --text-hero:clamp(36px,6vw,56px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2029; --fg:#e6e9ee; --muted:#9ba6b5; --line:#2c3441;
+  --noise:#6d798b; --noise-soft:#252c37; --signal:#f0a43a; --signal-soft:#3a2b16; --on-signal:#12161c;
+  --good:#5cc286; --bad:#e2735f; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2029; --fg:#e6e9ee; --muted:#9ba6b5; --line:#2c3441;
+  --noise:#6d798b; --noise-soft:#252c37; --signal:#f0a43a; --signal-soft:#3a2b16; --on-signal:#12161c;
+  --good:#5cc286; --bad:#e2735f; color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--fg);font:400 var(--text-body)/1.6 var(--font-body);
+  padding-left:max(var(--space-4),env(safe-area-inset-left,0px));padding-right:max(var(--space-4),env(safe-area-inset-right,0px));padding-block:var(--space-6) var(--space-7)}
+::selection{background:var(--signal-soft);color:var(--fg)}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:var(--space-7)}
+h1,h2,h3{font-family:var(--font-display);margin:0;line-height:1.12;overflow-wrap:break-word;min-width:0}
+h1{font-size:var(--text-hero);font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+h2{font-size:var(--text-section);font-weight:800;text-wrap:balance}
+h3{font-size:18px;font-weight:600}
+p{margin:0;max-width:65ch}
+a{color:var(--signal);text-underline-offset:.2em}
+a:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:2px}
+a:hover{text-decoration-thickness:2px}
+a:active{color:var(--fg)}
+.lede{font-size:var(--text-lede);color:var(--muted);max-width:56ch}
+section{display:flex;flex-direction:column;gap:var(--space-4)}
+section > h2{margin-bottom:var(--space-1)}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+
+/* timeline */
+.strip{border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden}
+.strip svg{display:block;width:100%;height:auto}
+.strip text,.diagram text{font-family:var(--font-mono);font-size:12px;fill:var(--muted)}
+.strip .t-strong,.diagram .t-strong{fill:var(--fg);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:var(--space-4);font-size:var(--text-small);color:var(--muted);padding:var(--space-2) var(--space-3);border-top:1px solid var(--line)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:var(--space-2)}
+.sw.voice{background:var(--signal)} .sw.rumble{background:var(--noise)}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:var(--space-3)}
+.fact{border-top:1px solid var(--line);padding-top:var(--space-2);display:flex;flex-direction:column}
+.fact b{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600}
+.fact span{color:var(--muted);font-size:var(--text-small)}
+
+/* attempts */
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;counter-reset:step}
+ol.steps li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:var(--space-3);padding:var(--space-4) 0;border-top:1px solid var(--line);counter-increment:step}
+ol.steps li:last-child{border-bottom:1px solid var(--line)}
+ol.steps li::before{content:counter(step);font-family:var(--font-mono);color:var(--muted);padding-top:2px}
+.step-body{min-width:0;display:flex;flex-direction:column;gap:var(--space-1)}
+.step-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-3)}
+.state{font-size:var(--text-small);font-weight:600}
+.state.no{color:var(--bad)} .state.part{color:var(--muted)} .state.yes{color:var(--good)}
+.step-body p{color:var(--muted);font-size:16px}
+li.win{background:var(--signal-soft);border-radius:6px;padding-left:var(--space-3);padding-right:var(--space-3);border-top-color:transparent}
+li.win + li.win{margin-top:var(--space-2)}
+li.win::before{color:var(--signal)}
+
+/* diagrams */
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:var(--space-5) var(--space-4);overflow-x:auto}
+.diagram svg{display:block;min-width:620px;width:100%;height:auto}
+.note{font-size:var(--text-small);color:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line)}
+.box-hot{fill:var(--signal-soft);stroke:var(--signal)}
+.bar-noise{fill:var(--noise)} .bar-voice{fill:var(--signal)}
+.arrow{fill:none;stroke:var(--muted);stroke-width:1.5}
+.tip{fill:var(--muted)}
+.in-bar{fill:var(--on-signal);font-size:11px}
+
+/* code */
+pre{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:var(--space-4);overflow-x:auto;font:400 14px/1.6 var(--font-mono)}
+code{font-family:var(--font-mono);font-size:.92em}
+
+/* table */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:var(--text-small)}
+th,td{text-align:left;padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted)}
+td.num{white-space:nowrap}
+
+ul.lessons{margin:0;padding-left:var(--space-5);display:flex;flex-direction:column;gap:var(--space-2);max-width:65ch}
+footer{font-size:var(--text-small);color:var(--muted);border-top:1px solid var(--line);padding-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:var(--space-4)">
+  <h1>The pocket recording</h1>
+  <p class="lede">A phone slid into a pocket mid-meeting, and one voice nearly vanished.</p>
+  <p>The recording: 7 minutes 37 seconds of iPhone video, two people talking. This is how the lost voice came back, and the tool it turned into, <code>unmuffle</code>.</p>
+</header>
+
+<section>
+  <h2>Clean for two minutes, then a wall of rumble</h2>
+  <div class="strip">
+    <svg viewBox="0 0 760 120" preserveAspectRatio="none" role="img" aria-label="Timeline diagram: clean speech from 0:00 to 2:08, then steady low rumble to 7:37 with the voices mostly hidden.">
+      <rect x="0" y="0" width="760" height="120" style="fill:var(--surface)"/>
+      <rect x="211" y="58" width="549" height="62" class="bar-noise" opacity=".55"/>
+      <rect x="211" y="40" width="549" height="22" class="bar-noise" opacity=".25"/>
+      <g class="bar-voice" id="cleanbars"></g>
+      <g class="bar-voice" opacity=".35" id="buriedbars"></g>
+      <line x1="211" y1="0" x2="211" y2="120" style="stroke:var(--fg)" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="8" y="16">0:00</text>
+      <text x="219" y="16" class="t-strong">2:08 mic covered</text>
+      <text x="712" y="16">7:37</text>
+    </svg>
+    <div class="legend"><span><i class="sw voice"></i>voice</span><span><i class="sw rumble"></i>rumble</span><span>bar height shows how much of the frequency range each one fills</span></div>
+  </div>
+  <div class="facts">
+    <div class="fact"><b>+9.2 dB</b><span>louder background once the mic was covered, steady to the end</span></div>
+    <div class="fact"><b>&lt;1.6 kHz</b><span>where the rumble sits, on top of the speech band</span></div>
+    <div class="fact"><b>37 s</b><span>near minute 4 where models heard nothing and a person heard someone talking</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>The first problem was getting a model at all</h2>
+  <p>Hugging Face, the usual source for Whisper, was blocked from both the cloud workspace and the laptop. The one model available offline, Vosk small, returned almost nothing after 2:08. The way through was the sherpa-onnx project, which publishes Whisper builds on GitHub, which was not blocked. From there: Whisper <code>large-v3-turbo</code> for the main pass and <code>medium.en</code> as a second opinion, both int8 on CPU.</p>
+</section>
+
+<section>
+  <h2>Six attempts on the noisy half</h2>
+  <ol class="steps">
+    <li><div class="step-body"><div class="step-head"><h3>Spectral noise reduction</h3><span class="state part">Partial</span></div><p>Learn the noise profile, subtract it, boost the level. The louder speaker came through in pieces. Whisper filled the rest with invented phrases.</p></div></li>
+    <li><div class="step-body"><div class="step-head"><h3>AI voice isolation (DPDFNet)</h3><span class="state part">Partial</span></div><p>A DeepFilterNet model trained to keep voice and drop everything else. It helped the louder speaker and erased the quieter one as noise.</p></div></li>
+    <li><div class="step-body"><div class="step-head"><h3>Short overlapping windows</h3><span class="state part">Partial</span></div><p>6 to 12 second slices, so Whisper stops skipping quiet stretches. Small gaps filled in. The 37 second gap came back as “so” and “Thank you.”</p></div></li>
+    <li><div class="step-body"><div class="step-head"><h3>Target the low band</h3><span class="state no">Failed</span></div><p>The spectrogram showed nothing above 1.5 kHz in the gap, so the quiet voice was muffled. Isolating 120 to 1,100 Hz gave both models “[wind blowing]”.</p></div></li>
+    <li class="win"><div class="step-body"><div class="step-head"><h3>Subtract the two mics</h3><span class="state yes">Breakthrough</span></div><p>The two iPhone channels correlated at 0.88. The rumble was nearly identical on both and the voices were not. Left minus right cut the low-band rumble by about 12 dB, and words showed up in the gap.</p></div></li>
+    <li class="win"><div class="step-body"><div class="step-head"><h3>Adaptive canceller, per frequency</h3><span class="state yes">Near word for word</span></div><p>Learn, for each of 513 frequency bins and each 2 second block, exactly how the rumble differs between the mics, then subtract it. Fragments became full sentences.</p></div></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Two mics hear the same rumble, not the same voice</h2>
+  <div class="diagram">
+    <svg viewBox="0 0 680 300" role="img" aria-label="Diagram of the two-mic canceller: mic A and mic B both carry rumble and voice; the canceller learns how the rumble differs per frequency, subtracts it, and the voice remains.">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="tip"/></marker></defs>
+      <rect x="10" y="30" width="170" height="90" rx="8" class="box"/>
+      <text x="24" y="54" class="t-strong">Mic A (left)</text>
+      <rect x="24" y="66" width="140" height="14" rx="3" class="bar-noise" opacity=".75"/>
+      <text x="30" y="77" class="in-bar">rumble</text>
+      <rect x="24" y="86" width="90" height="14" rx="3" class="bar-voice"/>
+      <text x="30" y="97" class="in-bar">voice</text>
+      <rect x="10" y="170" width="170" height="90" rx="8" class="box"/>
+      <text x="24" y="194" class="t-strong">Mic B (right)</text>
+      <rect x="24" y="206" width="134" height="14" rx="3" class="bar-noise" opacity=".75"/>
+      <text x="30" y="217" class="in-bar">rumble</text>
+      <rect x="24" y="226" width="50" height="14" rx="3" class="bar-voice"/>
+      <text x="30" y="237" class="in-bar">voice</text>
+      <path d="M180 75 C 230 75, 230 140, 268 140" class="arrow" marker-end="url(#ar)"/>
+      <path d="M180 215 C 230 215, 230 160, 268 160" class="arrow" marker-end="url(#ar)"/>
+      <rect x="270" y="100" width="190" height="100" rx="8" class="box-hot"/>
+      <text x="284" y="126" class="t-strong">Adaptive canceller</text>
+      <text x="284" y="148">a(f) = Σ L·R̄ / Σ |R|²</text>
+      <text x="284" y="168">out = L − a(f)·R</text>
+      <text x="284" y="188">per bin, per 2 s block</text>
+      <path d="M460 150 L 498 150" class="arrow" marker-end="url(#ar)"/>
+      <rect x="500" y="105" width="170" height="90" rx="8" class="box"/>
+      <text x="514" y="130" class="t-strong">Result</text>
+      <rect x="514" y="142" width="22" height="14" rx="3" class="bar-noise" opacity=".35"/>
+      <text x="542" y="153">rumble mostly gone</text>
+      <rect x="514" y="164" width="90" height="14" rx="3" class="bar-voice"/>
+      <text x="610" y="175">voice</text>
+      <text x="270" y="236">The rumble carries most of the energy,</text>
+      <text x="270" y="254">so predicting L from R mostly predicts</text>
+      <text x="270" y="272">rumble. What is left is the voice that</text>
+      <text x="270" y="290">reaches the two mics differently.</text>
+    </svg>
+  </div>
+  <p class="note">The cancelled track came out mostly one speaker, and the normal mix mostly the other. That made speaker labels something you could measure.</p>
+</section>
+
+<section>
+  <h2>From one recording to a tool</h2>
+  <p>The manual process took an afternoon of trial and error. <code>unmuffle</code> runs the same steps on its own: drop in a file and a transcript folder appears next to it.</p>
+  <pre><code>unmuffle run meeting.mov --names "Alex,Sam"
+unmuffle watch ~/Desktop/to-transcribe</code></pre>
+  <div class="diagram">
+    <svg viewBox="0 0 680 250" role="img" aria-label="Pipeline diagram: find the covered-mic point; the clean part goes through speaker diarization and Whisper per turn; the noisy part builds a mix and a cancelled track, isolates voice, cuts at pauses and runs Whisper on both; voice prints assign speakers; a second model checks every line.">
+      <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="tip"/></marker></defs>
+      <rect x="10" y="95" width="130" height="60" rx="8" class="box"/>
+      <text x="22" y="120" class="t-strong">Find the point</text>
+      <text x="22" y="140">+6 dB lasting rise</text>
+      <path d="M140 115 C 165 115, 165 55, 188 55" class="arrow" marker-end="url(#ar2)"/>
+      <path d="M140 135 C 165 135, 165 195, 188 195" class="arrow" marker-end="url(#ar2)"/>
+      <rect x="190" y="20" width="250" height="70" rx="8" class="box"/>
+      <text x="204" y="44" class="t-strong">Clean part</text>
+      <text x="204" y="63">speaker diarization → turns</text>
+      <text x="204" y="80">Whisper on each turn</text>
+      <rect x="190" y="150" width="250" height="90" rx="8" class="box-hot"/>
+      <text x="204" y="174" class="t-strong">Noisy part</text>
+      <text x="204" y="193">mix track + cancelled track</text>
+      <text x="204" y="210">voice isolation, cut at pauses</text>
+      <text x="204" y="227">Whisper on both tracks</text>
+      <path d="M440 55 C 470 55, 470 110, 498 110" class="arrow" marker-end="url(#ar2)"/>
+      <path d="M440 195 C 470 195, 470 140, 498 140" class="arrow" marker-end="url(#ar2)"/>
+      <rect x="500" y="85" width="170" height="80" rx="8" class="box"/>
+      <text x="514" y="109" class="t-strong">Label and check</text>
+      <text x="514" y="128">voice prints → speakers</text>
+      <text x="514" y="146">medium.en re-checks</text>
+      <text x="514" y="160">every line, flags [?]</text>
+    </svg>
+  </div>
+  <p class="note">Every stage caches its work, so a stopped run resumes. Only one large model is in memory at a time, which keeps a 7.5 minute file under 4 GB.</p>
+</section>
+
+<section>
+  <h2>How it did</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Measure</th><th>By hand</th><th>unmuffle v0.1</th></tr></thead>
+      <tbody>
+        <tr><td>Covered-mic point</td><td>Seen on a spectrogram</td><td class="num">Found on its own, to the second</td></tr>
+        <tr><td>Speaker turns, clean part</td><td>Assigned from context</td><td class="num">17 turns, diarized</td></tr>
+        <tr><td>Which track is which speaker</td><td>Inferred by listening</td><td class="num">Voice print 0.50 vs 0.08</td></tr>
+        <tr><td>The 37 second gap</td><td>Full sentences</td><td>Full sentences</td></tr>
+        <tr><td>Lines needing a listen</td><td class="num">29 guessed words, 2 gaps</td><td class="num">19 of 70 lines flagged</td></tr>
+        <tr><td>Time</td><td>An afternoon</td><td class="num">17 min on 4 CPU cores</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">The automated transcript is rougher on the louder speaker’s lines in the noisy half, which a person merged by ear. The flags land on exactly those lines.</p>
+</section>
+
+<section>
+  <h2>What made the difference</h2>
+  <ul class="lessons">
+    <li><strong>Trust the listener over the model.</strong> Every model said the gap was empty. A person heard speech, and that was the reason to keep digging.</li>
+    <li><strong>Look at the spectrogram.</strong> It showed where the voice lived, and why each method failed.</li>
+    <li><strong>Keep every channel.</strong> Mixing to mono threw away the one difference that separated voice from rumble.</li>
+    <li><strong>Make models disagree on purpose.</strong> Where two models agree, the words hold up. Where they don’t, a person should listen.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>Built with ffmpeg, Whisper (large-v3-turbo and medium.en through sherpa-onnx), DPDFNet, pyannote segmentation, 3D-Speaker embeddings, and a frequency-domain canceller in NumPy. Everything runs locally.</p>
+  <p>Source: <a href="https://github.com/auswallace/unmuffle">github.com/auswallace/unmuffle</a>. Listen to the demo: <a href="index.html">before and after</a>.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+  var ns="http://www.w3.org/2000/svg";
+  var c=document.getElementById("cleanbars"), b=document.getElementById("buriedbars");
+  if(!c||!b) return;
+  var seed=7; function r(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  for(var x=4;x<207;x+=4){var h=r()<.12?4:20+r()*70;var e=document.createElementNS(ns,"rect");
+    e.setAttribute("x",x);e.setAttribute("y",120-h);e.setAttribute("width",2.4);e.setAttribute("height",h);c.appendChild(e);}
+  for(var x2=215;x2<758;x2+=4){var h2=r()<.3?2:6+r()*22;var e2=document.createElementNS(ns,"rect");
+    e2.setAttribute("x",x2);e2.setAttribute("y",50-h2/2);e2.setAttribute("width",2.4);e2.setAttribute("height",h2);b.appendChild(e2);}
+})();
+</script>
+</body>
+</html>

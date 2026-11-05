@@ -1,0 +1,95 @@
+{
+  "pocket_at": 20.0,
+  "lines": [
+    {
+      "speaker": "Sam",
+      "start": 0.6,
+      "end": 3.4,
+      "text": "Hey Alex, do you have a minute to talk about the market booth?"
+    },
+    {
+      "speaker": "Alex",
+      "start": 4.17,
+      "end": 6.06,
+      "text": "Sure. What's going on with it?"
+    },
+    {
+      "speaker": "Sam",
+      "start": 6.64,
+      "end": 10.36,
+      "text": "The city moved us from the corner spot to the back row by the parking lot."
+    },
+    {
+      "speaker": "Alex",
+      "start": 11.15,
+      "end": 13.6,
+      "text": "Since when? Nobody told me about that."
+    },
+    {
+      "speaker": "Sam",
+      "start": 13.99,
+      "end": 17.85,
+      "text": "The email came on Tuesday. I think it only went to the board."
+    },
+    {
+      "speaker": "Alex",
+      "start": 18.48,
+      "end": 21.13,
+      "text": "Okay. So what do you want to do about it?"
+    },
+    {
+      "speaker": "Sam",
+      "start": 21.65,
+      "end": 26.21,
+      "text": "I want to ask for the corner back, because most of our sales come from people walking past."
+    },
+    {
+      "speaker": "Alex",
+      "start": 26.92,
+      "end": 30.51,
+      "text": "That makes sense, but the permit office closes at four on Fridays."
+    },
+    {
+      "speaker": "Sam",
+      "start": 30.94,
+      "end": 34.27,
+      "text": "Then I can call them tomorrow morning before my shift starts."
+    },
+    {
+      "speaker": "Alex",
+      "start": 35.01,
+      "end": 37.91,
+      "text": "Ask them about the power outlet too. The freezer needs one."
+    },
+    {
+      "speaker": "Sam",
+      "start": 38.51,
+      "end": 43.81,
+      "text": "Good point. The ice cream sold out by noon last time because the freezer kept tripping."
+    },
+    {
+      "speaker": "Alex",
+      "start": 44.57,
+      "end": 48.9,
+      "text": "Right. And if they say no, we could share the corner with the bakery."
+    },
+    {
+      "speaker": "Sam",
+      "start": 49.47,
+      "end": 53.11,
+      "text": "Maria already told me she would split the space and the cost with us."
+    },
+    {
+      "speaker": "Alex",
+      "start": 53.66,
+      "end": 57.92,
+      "text": "Great. Send me what they say, and I will update the schedule."
+    },
+    {
+      "speaker": "Sam",
+      "start": 58.62,
+      "end": 61.43,
+      "text": "Will do. Thanks for sorting this out with me."
+    }
+  ]
+}
